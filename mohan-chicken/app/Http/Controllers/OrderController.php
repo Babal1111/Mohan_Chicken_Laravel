@@ -27,22 +27,22 @@ class OrderController extends Controller
         $validated = $request->validate([
             'menu_item_ids' => 'required|array',
             'menu_item_ids.*' => 'exists:menu_items,id',
-            'quantities' => 'required|array',
-            'quantities.*' => 'integer|min:1',
+            // 'quantities' => 'required',
+            // 'quantities.*' => 'integer|min:1',
         ]);
 
         $order = Order::create([
-            'user_id' => Auth::id(),
+            // 'user_id' => Auth::id(),
             'total_amount' => 0, // will update below
             'status' => 'pending',
         ]);
 
         $total = 0;
-        foreach ($validated['menu_item_ids'] as $index => $menuItemId) {
+        foreach ($validated['menu_item_ids'] as $menuItemId) {
             $menuItem = MenuItem::find($menuItemId);
-            $qty = $validated['quantities'][$index];
+            $qty = $validated['quantities'][$menuItemId] ?? 1; // default to 1 if not set
             $total += $menuItem->price * $qty;
-
+        
             OrderItem::create([
                 'order_id' => $order->id,
                 'menu_item_id' => $menuItem->id,
@@ -50,7 +50,7 @@ class OrderController extends Controller
                 'price' => $menuItem->price,
             ]);
         }
-
+        
         $order->update(['total_amount' => $total]);
 
         return redirect()->route('orders.index')->with('success', 'Order placed!');

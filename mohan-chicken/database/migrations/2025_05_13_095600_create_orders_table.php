@@ -5,16 +5,17 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void
-    {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->decimal('total_amount', 10, 2);
-            $table->string('status')->default('pending'); // pending, completed, canceled
-            $table->timestamps();
-        });
-    }
+// Original migration (create_orders_table.php)
+public function up()
+{
+    Schema::create('orders', function (Blueprint $table) {
+        $table->id();
+        $table->decimal('total_amount', 10, 2);
+        $table->string('status')->default('pending');
+        $table->timestamps();
+    });
+}
+
 
     public function down(): void
     {
